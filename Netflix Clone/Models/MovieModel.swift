@@ -15,11 +15,11 @@ struct MovieResponse: Codable {
 // MARK: - Movie
 struct Movie: Codable {
     let adult: Bool?
-    let backdropPath: String?
+    let backdrop_path: String?
     let id: Int?
     let title: String?
 //    let originalLanguage: OriginalLanguage
-    let originalTitle: String?
+    let original_title: String?
     let overview : String?
     let poster_path: String?
 //    let mediaType: MediaType
@@ -29,7 +29,7 @@ struct Movie: Codable {
     let video: Bool?
     let voteAverage: Double?
     let voteCount: Int?
-    let name, originalName, firstAirDate: String?
+    let name, original_name, firstAirDate: String?
 //    let originCountry: [String]?
 }
 

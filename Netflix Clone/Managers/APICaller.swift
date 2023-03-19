@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Alamofire
 
 struct Constants {
     static let API_KEY = "df4b1c3a9e391d3597979c30c5149b36"
@@ -29,7 +30,7 @@ class APICaller {
             
             do {
                 let results = try JSONDecoder().decode(MovieResponse.self, from: data)
-                print("postarPath \(data)")
+                
                 completion(.success(results.results))
             }catch {
                 print(error)
@@ -39,4 +40,27 @@ class APICaller {
         
         task.resume()
     }
+    
+    func getMovies(endUrl: String, completion: @escaping (Result<[Movie],Error>) -> Void) {
+        guard let url = URL(string: "\(Constants.BASE_URL)/3/movie/\(endUrl)?api_key=\(Constants.API_KEY)") else {return}
+                
+        let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
+            guard let data = data, error == nil else {
+                return
+            }
+            
+            do {
+                let results = try JSONDecoder().decode(MovieResponse.self, from: data)
+//                print("postarPath \(data)")
+                print("results \(results.results)")
+                completion(.success(results.results))
+            }catch {
+                print(error)
+                completion(.failure(error))
+            }
+        }
+        
+        task.resume()
+    }
+    
 }

@@ -10,11 +10,13 @@ import UIKit
 enum Sections: Int {
     case TrendingMovies = 0
     case Popular = 1
+    case Upcoming = 2
+    case TopRated = 3
 }
 
 class HomeViewController: UIViewController {
     
-    let titleSection: [String] = ["Trending Movies", "Popular"] //  "Trending TV", "Upcoming Movies", "Top Rated"
+    let titleSection: [String] = ["Trending Movies", "Popular","Upcoming Movies", "Top Rated"] //  "Trending TV",
     private let homeFeedTable : UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         
@@ -98,7 +100,25 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             }
         }
     case Sections.Popular.rawValue:
-        APICaller.shared.getTrendingMovies {results in
+        APICaller.shared.getMovies(endUrl: "popular") {results in
+            switch results {
+            case .success(let success):
+                cell.configureEachSection(with: success)
+            case .failure(let failure):
+                print(failure.localizedDescription)
+            }
+        }
+    case Sections.Upcoming.rawValue:
+        APICaller.shared.getMovies(endUrl: "upcoming") {results in
+            switch results {
+            case .success(let success):
+                cell.configureEachSection(with: success)
+            case .failure(let failure):
+                print(failure.localizedDescription)
+            }
+        }
+    case Sections.TopRated.rawValue:
+        APICaller.shared.getMovies(endUrl: "top_rated") {results in
             switch results {
             case .success(let success):
                 cell.configureEachSection(with: success)
