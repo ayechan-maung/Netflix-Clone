@@ -17,6 +17,7 @@ class UpcomingTableViewCell: UITableViewCell {
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         
         return imageView
     }()
@@ -54,8 +55,8 @@ class UpcomingTableViewCell: UITableViewCell {
     private func applyConstraints() {
         let upcomingImageViewConstraints = [
             upcomingImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            upcomingImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
-            upcomingImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15),
+            upcomingImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            upcomingImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             upcomingImageView.widthAnchor.constraint(equalToConstant: 100)
         ]
         
