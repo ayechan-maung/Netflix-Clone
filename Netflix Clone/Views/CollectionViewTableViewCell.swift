@@ -8,12 +8,18 @@
 import UIKit
 
 
+protocol CollectionViewTableViewCellDelegate: AnyObject {
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, model: MoviePreviewModel)
+}
+
 class CollectionViewTableViewCell: UITableViewCell {
     
     static let identifier = "CollectionViewTableViewCell"
     
     // Movies
     private var movies: [Movie] = [Movie]()
+    
+    weak var delegate: CollectionViewTableViewCellDelegate?
     
     private let collectionView: UICollectionView = {
         // Layout Orientation
@@ -82,6 +88,32 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return movies.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let item = movies[indexPath.row]
+        guard let itemName = item.original_title ?? item.original_name else {
+            return
+        }
+        
+        APICaller.shared.searchYTMovies(with: itemName + "trailer") {[weak self] result in
+            switch result {
+            case .success(let video):
+                
+                guard let overview = item.overview else {return}
+                
+                guard let strongSelf = self else {return}
+                
+                let previewModel = MoviePreviewModel(title: itemName, youtube_url: video.id.videoId, overview: overview)
+                self?.delegate?.collectionViewTableViewCellDidTapCell(strongSelf, model: previewModel)
+                print("data \(video.id)")
+            case .failure(let error):
+                print("error \(error)")
+            }
+        }
     }
     
 }

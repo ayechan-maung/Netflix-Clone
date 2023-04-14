@@ -17,6 +17,14 @@ class SearchViewController: UIViewController {
         
         return tableView
     }()
+    
+    private let searchController : UISearchController = {
+        let controller = UISearchController(searchResultsController: SearchResultViewController())
+        
+        controller.searchBar.placeholder = "Search"
+        controller.searchBar.searchBarStyle = .minimal
+        return controller
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +39,13 @@ class SearchViewController: UIViewController {
         discoverTableView.delegate = self
         discoverTableView.dataSource = self
         
+        navigationItem.searchController = searchController
+        navigationController?.navigationBar.tintColor = .white
+        
         fetchDiscover()
+        
+        
+        searchController.searchResultsUpdater = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -75,4 +89,36 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140
     }
+}
+
+
+extension SearchViewController : UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        
+        guard let query = searchBar.text,
+              !query.trimmingCharacters(in: .whitespaces).isEmpty,
+              query.trimmingCharacters(in: .whitespaces).count >= 3,
+              let resultController = searchController.searchResultsController as? SearchResultViewController else {
+            return
+        }
+        
+        APICaller.shared.searchMovies(query: query) { result in
+            
+            DispatchQueue.main.sync {
+                switch result {
+                case .success(let movies):
+                    resultController.movies = movies
+                    resultController.searchResultsCollectionView.reloadData()
+                    
+                case .failure(let error):
+                    print(error)
+                }
+                
+            }
+            
+        }
+    }
+    
+    
 }

@@ -40,6 +40,10 @@ class HomeViewController: UIViewController {
         let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
         
+        APICaller.shared.searchYTMovies(with: "Harry") { result in
+            //
+        }
+        
 //        getTrendingMovies()
     }
     
@@ -58,6 +62,7 @@ class HomeViewController: UIViewController {
             UIBarButtonItem(image: UIImage(named: "person"), style: .done, target: self, action: nil),
             UIBarButtonItem(image: UIImage(named: "play.rectangle"), style: .done, target: self, action: nil)
         ]
+        navigationController?.navigationBar.tintColor = .white
     }
     
 //    private func getTrendingMovies() {
@@ -89,46 +94,49 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-    switch indexPath.section {
-    case Sections.TrendingMovies.rawValue:
-        APICaller.shared.getTrendingMovies {results in
-            switch results {
-            case .success(let success):
-                cell.configureEachSection(with: success)
-            case .failure(let failure):
-                print(failure.localizedDescription)
+        // This delegate for item tap cell to bind delegate
+        cell.delegate = self
+        
+        switch indexPath.section {
+        case Sections.TrendingMovies.rawValue:
+            APICaller.shared.getTrendingMovies {results in
+                switch results {
+                case .success(let success):
+                    cell.configureEachSection(with: success)
+                case .failure(let failure):
+                    print(failure.localizedDescription)
+                }
             }
-        }
-    case Sections.Popular.rawValue:
-        APICaller.shared.getMovies(endUrl: "popular") {results in
-            switch results {
-            case .success(let success):
-                cell.configureEachSection(with: success)
-            case .failure(let failure):
-                print(failure.localizedDescription)
+        case Sections.Popular.rawValue:
+            APICaller.shared.getMovies(endUrl: "popular") {results in
+                switch results {
+                case .success(let success):
+                    cell.configureEachSection(with: success)
+                case .failure(let failure):
+                    print(failure.localizedDescription)
+                }
             }
-        }
-    case Sections.Upcoming.rawValue:
-        APICaller.shared.getMovies(endUrl: "upcoming") {results in
-            switch results {
-            case .success(let success):
-                cell.configureEachSection(with: success)
-            case .failure(let failure):
-                print(failure.localizedDescription)
+        case Sections.Upcoming.rawValue:
+            APICaller.shared.getMovies(endUrl: "upcoming") {results in
+                switch results {
+                case .success(let success):
+                    cell.configureEachSection(with: success)
+                case .failure(let failure):
+                    print(failure.localizedDescription)
+                }
             }
-        }
-    case Sections.TopRated.rawValue:
-        APICaller.shared.getMovies(endUrl: "top_rated") {results in
-            switch results {
-            case .success(let success):
-                cell.configureEachSection(with: success)
-            case .failure(let failure):
-                print(failure.localizedDescription)
+        case Sections.TopRated.rawValue:
+            APICaller.shared.getMovies(endUrl: "top_rated") {results in
+                switch results {
+                case .success(let success):
+                    cell.configureEachSection(with: success)
+                case .failure(let failure):
+                    print(failure.localizedDescription)
+                }
             }
+        default:
+            return UITableViewCell()
         }
-    default:
-        return UITableViewCell()
-    }
     
         return cell
     }
@@ -163,4 +171,18 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     
+}
+
+
+extension HomeViewController: CollectionViewTableViewCellDelegate {
+    
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, model: MoviePreviewModel) {
+        
+        DispatchQueue.main.async { [weak self] in
+            let vc = MoviePreviewViewController()
+            
+            vc.getPreviewData(with: model)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }

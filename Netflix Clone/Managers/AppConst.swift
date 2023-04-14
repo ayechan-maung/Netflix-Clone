@@ -17,5 +17,8 @@ class AppConst {
     //URL
     let BASE_URL = ""
     
+    // YOUTUBE API KEY
+    let YOUTUBE_KEY = "AIzaSyBjAuoC-42bJgaz4IYjsRLNSd7bGjn836s"
+    
     
 }
